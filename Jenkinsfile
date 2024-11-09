@@ -8,7 +8,7 @@ pipeline {
     stage('CompileandRunSonarAnalysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-          bat("mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.login=${params.SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.host.url=https://sonarcloud.io")
+          sh("mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.login=${params.SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.host.url=https://sonarcloud.io")
         }
       }
     }
@@ -26,7 +26,7 @@ pipeline {
         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
           script {
             try {
-              bat("snyk container test asecurityguru/testeb")
+              sh("snyk container test asecurityguru/testeb")
             } catch (err) {
               echo err.getMessage()
             }
@@ -37,19 +37,19 @@ pipeline {
     stage('RunSnykSCA') {
       steps {
         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-          bat("mvn snyk:test -fn")
+          sh("mvn snyk:test -fn")
         }
       }
     }
     stage('RunDASTUsingZAP') {
       steps {
-        bat("zap -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html")
+        sh("zap -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html")
       }
     }
 
     stage('checkov') {
       steps {
-        bat("checkov -s -f main.tf")
+        sh("checkov -s -f main.tf")
       }
     }
 
