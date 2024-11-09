@@ -14,11 +14,9 @@ pipeline {
     }
     stage('Build') {
       steps {
-        withDockerRegistry([credentialsId: "dockerlogin", url: ""]) {
           script {
-            app = docker.build("asecurityguru/testeb")
+            sh("docker build -t asecurityguru/testeb .")
           }
-        }
       }
     }
     stage('RunContainerScan') {
