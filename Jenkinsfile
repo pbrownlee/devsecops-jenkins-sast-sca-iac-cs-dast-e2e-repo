@@ -8,7 +8,7 @@ pipeline {
     stage('CompileandRunSonarAnalysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-          sh("mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.token=${params.SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.organization=paulsworld -Dsonar.host.url=https://sonarcloud.io")
+          sh("mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.token=${SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.organization=paulsworld -Dsonar.host.url=https://sonarcloud.io")
         }
       }
     }
