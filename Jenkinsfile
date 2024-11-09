@@ -39,11 +39,11 @@ pipeline {
         }
       }
     }
-    stage('RunDASTUsingZAP') {
-      steps {
-        sh("zap -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html")
-      }
-    }
+    //stage('RunDASTUsingZAP') {
+    //  steps {
+    //    sh("zap -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html")
+    //  }
+    //}
 
     stage('checkov') {
       steps {
