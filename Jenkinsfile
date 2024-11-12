@@ -8,15 +8,17 @@ pipeline {
     stage('CompileandRunSonarAnalysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-          sh("mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.token=${SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.organization=paulsworld -Dsonar.host.url=https://sonarcloud.io")
+          sh('mvn -Dmaven.test.failure.ignore verify sonar:sonar -Dsonar.token=${SONAR_TOKEN} -Dsonar.projectKey=paulsworld -Dsonar.organization=paulsworld -Dsonar.host.url=https://sonarcloud.io')
         }
       }
     }
     stage('Build') {
       steps {
+       withDockerRegistry([credentialsId: "dockerlogin", url: ""]) {
           script {
-            sh("docker build -t asecurityguru/testeb .")
+            app = docker.build('asecurityguru/testeb')
           }
+        }
       }
     }
     stage('RunContainerScan') {
@@ -24,7 +26,7 @@ pipeline {
         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
           script {
             try {
-              sh("snyk container test asecurityguru/testeb")
+              sh('snyk container test asecurityguru/testeb')
             } catch (err) {
               echo err.getMessage()
             }
@@ -39,15 +41,15 @@ pipeline {
         }
       }
     }
-    //stage('RunDASTUsingZAP') {
-    //  steps {
-    //    sh("zap -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html")
-    //  }
-    //}
+    stage('RunDASTUsingZAP') {
+      steps {
+        sh('/Applications/ZAP.app/Contents/Java/zap.sh -port 9393 -cmd -quickurl https://www.example.com -quickprogress -quickout ./Output.html')
+      }
+    }
 
     stage('checkov') {
       steps {
-        sh("checkov -s -f main.tf")
+        sh('checkov -s -f main.tf')
       }
     }
 
